@@ -8,12 +8,16 @@ type EmailOptions = {
 
 const sendEmail = async (options: EmailOptions) => {
   const transporter = nodemailer.createTransport({
+    service: "gmail",
     host: "smtp.gmail.com",
-    port: 465,
-    secure: true,
+    port: 587,
+    secure: false,
     auth: {
       user: process.env.EMAIL_USER,
       pass: process.env.EMAIL_PASS,
+    },
+    tls: {
+      rejectUnauthorized: false,
     },
   });
 
@@ -35,7 +39,7 @@ const sendEmail = async (options: EmailOptions) => {
           <p>If you didn't request this, please ignore this email.</p>
           <hr style="border: none; border-top: 1px solid #eee;" />
           <p style="font-size: 12px; color: #888; text-align: center;">
-            Securely powered by Shivam kumar jha
+            Securely powered by Shivam Kumar Jha
           </p>
         </div>
       </div>
@@ -43,10 +47,9 @@ const sendEmail = async (options: EmailOptions) => {
   };
 
   try {
+    await transporter.verify();
     await transporter.sendMail(mailOptions);
-    console.log("Email sent successfully to:", options.email);
   } catch (error) {
-    console.error("Email send failed:", error);
     throw new Error("Email could not be sent");
   }
 };
